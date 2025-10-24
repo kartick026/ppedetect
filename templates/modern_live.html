@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Monitoring - Modern PPE Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 300px 300px, 200px 200px, 150px 150px;
+            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .camera-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .camera-container {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .camera-feed {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: #000;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .camera-feed img {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(40, 167, 69, 0.6);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(220, 53, 69, 0.6);
+        }
+
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-panel {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .status-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-active {
+            background: #28a745;
+        }
+
+        .status-inactive {
+            background: #dc3545;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
+
+        .compliance-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #4facfe;
+        }
+
+        .compliance-status {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .compliant {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .non-compliant {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        .no-people {
+            background: linear-gradient(135deg, #e2e3e5 0%, #d6d8db 100%);
+            color: #495057;
+            border: 2px solid #6c757d;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .detection-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .detection-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .detection-class {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .detection-confidence {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .missing-ppe {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 30px;
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .camera-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .content {
+                padding: 30px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📹 Live Camera Monitoring</h1>
+            <p>Real-time PPE Detection and People Counting</p>
+        </div>
+
+        <div class="content">
+            <a href="/" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z"/>
+                </svg>
+                Back to Main Dashboard
+            </a>
+            
+            <div class="camera-section">
+                <div class="camera-container">
+                    <div class="controls">
+                        <button class="btn btn-success" onclick="startCamera()" id="startBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5V19L19 12L8 5Z"/>
+                            </svg>
+                            Start Camera
+                        </button>
+                        <button class="btn btn-danger" onclick="stopCamera()" id="stopBtn" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6 6H18V18H6V6Z"/>
+                            </svg>
+                            Stop Camera
+                        </button>
+                    </div>
+                    
+                    <div id="cameraStatus" class="status-indicator">
+                        <div class="status-dot status-inactive"></div>
+                        <span>Camera Status: Inactive</span>
+                    </div>
+                    
+                    <div id="cameraFeed" class="camera-feed">
+                        <div>Camera feed will appear here when started</div>
+                    </div>
+                </div>
+                
+                <div class="status-panel">
+                    <h3 style="color: #333; margin-bottom: 20px; font-size: 1.3rem;">Live Detection Results</h3>
+                    
+                    <div id="liveResults">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <div>Start camera to see live detection results</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let statusUpdateInterval;
+
+        function startCamera() {
+            fetch('/camera/start', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('startBtn').disabled = true;
+                    document.getElementById('stopBtn').disabled = false;
+                    document.getElementById('cameraFeed').innerHTML = '<img src="/video_feed" style="width: 100%; height: auto; border-radius: 15px;" alt="Live Camera Feed">';
+                    updateCameraStatus();
+                    
+                    // Start periodic status updates
+                    statusUpdateInterval = setInterval(updateCameraStatus, 2000);
+                } else {
+                    alert('Error starting camera: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error starting camera:', error);
+                alert('Error starting camera: ' + error.message);
+            });
+        }
+
+        function stopCamera() {
+            fetch('/camera/stop', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('startBtn').disabled = false;
+                    document.getElementById('stopBtn').disabled = true;
+                    document.getElementById('cameraFeed').innerHTML = '<div>Camera feed will appear here when started</div>';
+                    document.getElementById('liveResults').innerHTML = '<div class="loading"><div class="spinner"></div><div>Start camera to see live detection results</div></div>';
+                    updateCameraStatus();
+                    
+                    // Stop periodic updates
+                    if (statusUpdateInterval) {
+                        clearInterval(statusUpdateInterval);
+                    }
+                } else {
+                    alert('Error stopping camera: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error stopping camera:', error);
+                alert('Error stopping camera: ' + error.message);
+            });
+        }
+
+        function updateCameraStatus() {
+            fetch('/camera/status')
+            .then(response => response.json())
+            .then(data => {
+                const statusDiv = document.getElementById('cameraStatus');
+                const indicator = statusDiv.querySelector('.status-dot');
+                
+                if (data.active) {
+                    indicator.className = 'status-dot status-active';
+                    statusDiv.innerHTML = '<div class="status-dot status-active"></div><span>Camera Status: Active</span>';
+                    
+                    // Display live results
+                    const liveResults = document.getElementById('liveResults');
+                    const complianceStatus = data.compliance_status;
+                    const peopleCount = data.people_count || 0;
+                    
+                    let statusClass, statusIcon, statusText;
+                    
+                    if (complianceStatus === 'NO_PEOPLE') {
+                        statusClass = 'no-people';
+                        statusIcon = '👤';
+                        statusText = 'NO PEOPLE DETECTED';
+                    } else if (complianceStatus === 'COMPLIANT') {
+                        statusClass = 'compliant';
+                        statusIcon = '✅';
+                        statusText = 'PPE COMPLIANT';
+                    } else {
+                        statusClass = 'non-compliant';
+                        statusIcon = '❌';
+                        statusText = 'PPE NON-COMPLIANT';
+                    }
+                    
+                    let html = `
+                        <div class="compliance-card">
+                            <div class="compliance-status ${statusClass}">
+                                <span style="font-size: 1.5rem; margin-right: 10px;">${statusIcon}</span>
+                                <span>${statusText}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">${peopleCount}</div>
+                                <div class="stat-label">👤 PEOPLE</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">${data.detected_classes ? data.detected_classes.length : 0}</div>
+                                <div class="stat-label">🛡️ PPE ITEMS</div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    if (data.detected_classes && data.detected_classes.length > 0) {
+                        html += '<div style="margin-top: 20px;"><h4 style="color: #333; margin-bottom: 15px;">Detected PPE:</h4>';
+                        data.detected_classes.forEach(detection => {
+                            html += `
+                                <div class="detection-item">
+                                    <div class="detection-class">${detection.class.replace('_', ' ').toUpperCase()}</div>
+                                    <div class="detection-confidence">Confidence: ${(detection.confidence * 100).toFixed(1)}%</div>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                    }
+                    
+                    if (data.missing_ppe && data.missing_ppe.length > 0) {
+                        html += `
+                            <div class="missing-ppe">
+                                <strong>⚠️ Missing PPE:</strong> ${data.missing_ppe.join(', ').replace('_', ' ')}
+                            </div>
+                        `;
+                    }
+                    
+                    liveResults.innerHTML = html;
+                } else {
+                    indicator.className = 'status-dot status-inactive';
+                    statusDiv.innerHTML = '<div class="status-dot status-inactive"></div><span>Camera Status: Inactive</span>';
+                }
+            })
+            .catch(error => {
+                console.error('Error updating camera status:', error);
+            });
+        }
+
+        // Initialize status on page load
+        updateCameraStatus();
+    </script>
+</body>
+</html>

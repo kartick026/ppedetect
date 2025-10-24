@@ -1,0 +1,10 @@
+names:
+- helmet
+- vest
+- gloves
+- glasses
+nc: 4
+path: C:\Users\HP\OneDrive\Desktop\sanjayai\datasets\ppe-balanced
+test: test/images
+train: train/images
+val: valid/images

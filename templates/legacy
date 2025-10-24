@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cool Helmet Logo - PPE Detection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0A0F2C 0%, #1B1F3B 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(96, 165, 250, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 40% 40%, rgba(37, 99, 235, 0.08) 1px, transparent 1px);
+            background-size: 300px 300px, 200px 200px, 150px 150px;
+            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
+        }
+
+        .logo-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        /* Main Cool Helmet Logo */
+        .cool-helmet-logo {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Outer Energy Ring */
+        .energy-ring {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border: 4px solid transparent;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, 
+                #60A5FA 0deg, 
+                #3B82F6 90deg, 
+                #2563EB 180deg, 
+                #1D4ED8 270deg, 
+                #60A5FA 360deg);
+            animation: rotate 4s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Inner Glow Ring */
+        .glow-ring {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border: 2px solid rgba(96, 165, 250, 0.6);
+            border-radius: 50%;
+            animation: pulse 3s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        /* Central Helmet Shield */
+        .helmet-shield {
+            width: 240px;
+            height: 240px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f1419 100%);
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 40px rgba(96, 165, 250, 0.5),
+                inset 0 0 30px rgba(96, 165, 250, 0.2);
+            animation: glow 4s ease-in-out infinite;
+            z-index: 3;
+            overflow: hidden;
+        }
+
+        @keyframes glow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 40px rgba(96, 165, 250, 0.5),
+                    inset 0 0 30px rgba(96, 165, 250, 0.2);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 60px rgba(96, 165, 250, 0.7),
+                    inset 0 0 40px rgba(96, 165, 250, 0.3);
+            }
+        }
+
+        /* Helmet Icon - More Detailed */
+        .helmet-icon {
+            width: 120px;
+            height: 120px;
+            color: #60A5FA;
+            filter: drop-shadow(0 6px 12px rgba(96, 165, 250, 0.4));
+            animation: helmetFloat 3s ease-in-out infinite;
+            z-index: 4;
+        }
+
+        @keyframes helmetFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(2deg); }
+        }
+
+        /* Scanning Lines */
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #60A5FA, transparent);
+            animation: scan 2s linear infinite;
+            z-index: 5;
+        }
+
+        .scan-line:nth-child(1) {
+            top: 20%;
+            animation-delay: 0s;
+        }
+
+        .scan-line:nth-child(2) {
+            top: 40%;
+            animation-delay: 0.5s;
+        }
+
+        .scan-line:nth-child(3) {
+            top: 60%;
+            animation-delay: 1s;
+        }
+
+        .scan-line:nth-child(4) {
+            top: 80%;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes scan {
+            0% { 
+                left: -100%;
+                opacity: 0;
+            }
+            50% { 
+                opacity: 1;
+            }
+            100% { 
+                left: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Detection Dots */
+        .detection-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            animation: blink 2s ease-in-out infinite;
+            z-index: 6;
+        }
+
+        .detection-dot:nth-child(1) {
+            top: 15%;
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .detection-dot:nth-child(2) {
+            top: 25%;
+            right: 15%;
+            animation-delay: 0.5s;
+        }
+
+        .detection-dot:nth-child(3) {
+            bottom: 20%;
+            left: 25%;
+            animation-delay: 1s;
+        }
+
+        .detection-dot:nth-child(4) {
+            bottom: 30%;
+            right: 20%;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes blink {
+            0%, 100% { 
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Energy Particles */
+        .energy-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #60A5FA;
+            border-radius: 50%;
+            animation: orbit 6s linear infinite;
+        }
+
+        .energy-particle:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .energy-particle:nth-child(2) {
+            animation-delay: 1s;
+        }
+
+        .energy-particle:nth-child(3) {
+            animation-delay: 2s;
+        }
+
+        .energy-particle:nth-child(4) {
+            animation-delay: 3s;
+        }
+
+        @keyframes orbit {
+            0% { 
+                transform: rotate(0deg) translateX(150px) rotate(0deg);
+                opacity: 0;
+            }
+            10% { 
+                opacity: 1;
+            }
+            90% { 
+                opacity: 1;
+            }
+            100% { 
+                transform: rotate(360deg) translateX(150px) rotate(-360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Logo Text */
+        .logo-text {
+            text-align: center;
+            color: #FFFFFF;
+            z-index: 10;
+        }
+
+        .logo-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 50%, #2563EB 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.02em;
+            animation: textGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.3));
+            }
+            50% { 
+                filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.6));
+            }
+        }
+
+        .logo-subtitle {
+            font-size: 1.4rem;
+            color: #A0AEC0;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .logo-tagline {
+            font-size: 1rem;
+            color: #60A5FA;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        /* Status Indicators */
+        .status-indicators {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+
+        .status-dot.active {
+            background: #10B981;
+        }
+
+        .status-dot.scanning {
+            background: #F59E0B;
+        }
+
+        .status-dot.detecting {
+            background: #EF4444;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { 
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* PPE Equipment Icons */
+        .ppe-equipment {
+            position: absolute;
+            bottom: -60px;
+            display: flex;
+            gap: 25px;
+            opacity: 0.8;
+            z-index: 10;
+        }
+
+        .equipment-icon {
+            width: 28px;
+            height: 28px;
+            color: #60A5FA;
+            animation: equipmentBounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 2px 4px rgba(96, 165, 250, 0.3));
+        }
+
+        .equipment-icon:nth-child(1) { animation-delay: 0s; }
+        .equipment-icon:nth-child(2) { animation-delay: 0.3s; }
+        .equipment-icon:nth-child(3) { animation-delay: 0.6s; }
+        .equipment-icon:nth-child(4) { animation-delay: 0.9s; }
+
+        @keyframes equipmentBounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-12px); }
+            60% { transform: translateY(-6px); }
+        }
+
+        /* Interactive Effects */
+        .cool-helmet-logo:hover .helmet-shield {
+            transform: scale(1.05);
+            box-shadow: 
+                0 0 80px rgba(96, 165, 250, 0.8),
+                inset 0 0 50px rgba(96, 165, 250, 0.4);
+        }
+
+        .cool-helmet-logo:hover .energy-ring {
+            animation-duration: 2s;
+        }
+
+        .cool-helmet-logo:hover .scan-line {
+            animation-duration: 1s;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .cool-helmet-logo {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .helmet-shield {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .helmet-icon {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .logo-title {
+                font-size: 2.5rem;
+            }
+            
+            .logo-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Status Indicators -->
+    <div class="status-indicators">
+        <div class="status-dot active"></div>
+        <div class="status-dot scanning"></div>
+        <div class="status-dot detecting"></div>
+    </div>
+
+    <div class="logo-container">
+        <!-- Cool Helmet Logo -->
+        <div class="cool-helmet-logo">
+            <!-- Energy Ring -->
+            <div class="energy-ring"></div>
+            
+            <!-- Glow Ring -->
+            <div class="glow-ring"></div>
+            
+            <!-- Central Helmet Shield -->
+            <div class="helmet-shield">
+                <!-- Scanning Lines -->
+                <div class="scan-line"></div>
+                <div class="scan-line"></div>
+                <div class="scan-line"></div>
+                <div class="scan-line"></div>
+                
+                <!-- Detection Dots -->
+                <div class="detection-dot"></div>
+                <div class="detection-dot"></div>
+                <div class="detection-dot"></div>
+                <div class="detection-dot"></div>
+                
+                <!-- Helmet Icon -->
+                <svg class="helmet-icon" viewBox="0 0 64 64" fill="currentColor">
+                    <!-- Helmet Base -->
+                    <path d="M32 8C18.8 8 8 18.8 8 32c0 2.2.3 4.3.9 6.3h46.2c.6-2 .9-4.1.9-6.3C56 18.8 45.2 8 32 8z"/>
+                    <path d="M4 40c0 2.2 1.8 4 4 4h48c2.2 0 4-1.8 4-4v-2H4v2z"/>
+                    
+                    <!-- Helmet Details -->
+                    <ellipse cx="32" cy="24" rx="16" ry="12" opacity="0.3"/>
+                    
+                    <!-- Safety Lines -->
+                    <path d="M20 20h24M20 24h24M20 28h24" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+                    
+                    <!-- Helmet Vents -->
+                    <circle cx="24" cy="32" r="2" opacity="0.4"/>
+                    <circle cx="40" cy="32" r="2" opacity="0.4"/>
+                    
+                    <!-- Face Shield -->
+                    <path d="M20 30 Q32 25 44 30" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
+                    
+                    <!-- Helmet Strap -->
+                    <path d="M16 36 Q32 40 48 36" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.4"/>
+                </svg>
+            </div>
+            
+            <!-- Energy Particles -->
+            <div class="energy-particle"></div>
+            <div class="energy-particle"></div>
+            <div class="energy-particle"></div>
+            <div class="energy-particle"></div>
+        </div>
+
+        <!-- Logo Text -->
+        <div class="logo-text">
+            <h1 class="logo-title">HELMET DETECTION</h1>
+            <p class="logo-subtitle">Advanced AI Safety System</p>
+            <p class="logo-tagline">Protecting Lives Through Technology</p>
+        </div>
+
+        <!-- PPE Equipment Icons -->
+        <div class="ppe-equipment">
+            <!-- Helmet -->
+            <svg class="equipment-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+            </svg>
+            <!-- Safety Vest -->
+            <svg class="equipment-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <!-- Goggles -->
+            <svg class="equipment-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+            <!-- Gloves -->
+            <svg class="equipment-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 2c-1.1 0-2 .9-2 2v6.37c0 .69.35 1.33.94 1.7L8 13.5V20c0 1.1.9 2 2 2s2-.9 2-2v-6.5l2.06-1.43c.59-.37.94-1.01.94-1.7V4c0-1.1-.9-2-2-2H7zm0 2h6v6.37L11 11.5V20h-2v-8.5L7 10.37V4z"/>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        // Add interactive effects
+        document.addEventListener('mousemove', function(e) {
+            const logo = document.querySelector('.cool-helmet-logo');
+            const rect = logo.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const deltaX = (e.clientX - centerX) / 30;
+            const deltaY = (e.clientY - centerY) / 30;
+            
+            logo.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        });
+
+        // Reset position on mouse leave
+        document.addEventListener('mouseleave', function() {
+            const logo = document.querySelector('.cool-helmet-logo');
+            logo.style.transform = 'translate(0, 0)';
+        });
+
+        // Add click effect
+        document.querySelector('.cool-helmet-logo').addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 200);
+        });
+
+        // Status indicator animation
+        setInterval(() => {
+            const dots = document.querySelectorAll('.status-dot');
+            dots.forEach((dot, index) => {
+                setTimeout(() => {
+                    dot.style.animation = 'none';
+                    setTimeout(() => {
+                        dot.style.animation = 'statusPulse 2s ease-in-out infinite';
+                    }, 100);
+                }, index * 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

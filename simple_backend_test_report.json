@@ -1,0 +1,53 @@
+{
+  "timestamp": "2025-10-25T02:22:31.412850",
+  "total_tests": 6,
+  "passed_tests": 6,
+  "grade": "A+",
+  "results": [
+    [
+      "ML Model Loading",
+      true,
+      "Model loaded and inference working"
+    ],
+    [
+      "Endpoint /",
+      true,
+      "Status: 200"
+    ],
+    [
+      "Endpoint /stats",
+      true,
+      "Status: 200"
+    ],
+    [
+      "Endpoint /history",
+      true,
+      "Status: 200"
+    ],
+    [
+      "Detection API",
+      true,
+      "Detections: 0"
+    ],
+    [
+      "Performance",
+      true,
+      "Avg: 2.156s, Rating: Good"
+    ],
+    [
+      "Data History",
+      true,
+      "18 records"
+    ],
+    [
+      "Data Statistics",
+      true,
+      "Rate: 0.0%"
+    ],
+    [
+      "Detection Accuracy",
+      true,
+      "Multiple scenarios tested"
+    ]
+  ]
+}

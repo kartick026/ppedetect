@@ -1,0 +1,63 @@
+{
+  "timestamp": "2025-10-25T01:35:47.999053",
+  "total_tests": 7,
+  "passed_tests": 4,
+  "grade": "C",
+  "results": [
+    [
+      "ML Model Loading",
+      true,
+      "Model loaded and inference working"
+    ],
+    [
+      "Endpoint /",
+      true,
+      "Status: 200"
+    ],
+    [
+      "Endpoint /live",
+      false,
+      "Status: 404"
+    ],
+    [
+      "Endpoint /stats",
+      true,
+      "Status: 200"
+    ],
+    [
+      "Endpoint /history",
+      true,
+      "Status: 200"
+    ],
+    [
+      "Endpoint /camera/status",
+      false,
+      "Status: 404"
+    ],
+    [
+      "Detection API",
+      true,
+      "Detections: 2"
+    ],
+    [
+      "Video Feed",
+      false,
+      "Status: 404"
+    ],
+    [
+      "Performance",
+      true,
+      "Avg: 2.134s, Rating: Good"
+    ],
+    [
+      "Data History",
+      true,
+      "6 records"
+    ],
+    [
+      "Data Statistics",
+      true,
+      "Rate: 100.0%"
+    ]
+  ]
+}

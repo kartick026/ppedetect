@@ -1,0 +1,22 @@
+# YOLO Dataset Configuration for Glove Detection
+# Dataset path (relative to this file)
+path: combined_datasets
+
+# Train, validation and test directories (relative to 'path')
+train: images/train
+val: images/valid
+test: images/test
+
+# Number of classes
+nc: 4
+
+# Class names - PPE (Personal Protective Equipment) Detection
+names:
+  0: "helmet"
+  1: "safety_vest"
+  2: "goggles"
+  3: "gloves"
+
+# Optional: Download script (if needed)
+# download: |
+#   # Download commands would go here

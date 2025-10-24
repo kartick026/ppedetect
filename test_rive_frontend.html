@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rive Animation Test</title>
+    <script src="https://unpkg.com/@rive-app/canvas@2.7.0"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0A0F2C 0%, #1B1F3B 100%);
+            margin: 0;
+            padding: 2rem;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .rive-container {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .fallback-icon {
+            font-size: 4rem;
+            color: #60A5FA;
+            animation: iconBounce 3s ease-in-out infinite;
+        }
+        
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        h1 {
+            margin-top: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 50%, #1E40AF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        p {
+            color: #A0AEC0;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="rive-container" id="rive-container">
+        <!-- Rive animation will be loaded here -->
+    </div>
+    
+    <h1>PPE Detection System</h1>
+    <p>AI-powered Personal Protective Equipment Detection</p>
+
+    <script>
+        async function loadRiveAnimation() {
+            try {
+                const { Rive } = rive;
+                const riveInstance = new Rive({
+                    src: 'https://cdn.rive.app/animations/helmet_loader.riv',
+                    canvas: document.getElementById('rive-container'),
+                    autoplay: true,
+                    loop: true,
+                    onLoad: () => {
+                        console.log('Rive animation loaded successfully');
+                    },
+                    onLoadError: (err) => {
+                        console.log('Rive animation failed to load:', err);
+                        // Fallback to CSS animation if Rive fails
+                        document.getElementById('rive-container').innerHTML = '<i class="fas fa-hard-hat fallback-icon"></i>';
+                    }
+                });
+            } catch (error) {
+                console.log('Rive not available, using fallback animation');
+                document.getElementById('rive-container').innerHTML = '<i class="fas fa-hard-hat fallback-icon"></i>';
+            }
+        }
+
+        // Initialize Rive animation on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRiveAnimation();
+        });
+    </script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # PPE Detection System
 
 A comprehensive AI-powered Personal Protective Equipment (PPE) detection system using YOLOv8 for real-time monitoring and compliance checking.
@@ -233,3 +234,6 @@ For support and questions:
 ---
 
 **PPE Detection System** - Ensuring workplace safety through AI-powered monitoring 🛡️
+=======
+# ppedetect
+>>>>>>> a6be28bdd5349ae15c19ae045ef98eea37b6f054
